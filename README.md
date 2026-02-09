@@ -1,90 +1,93 @@
-# 基于vggsfm与apriltag在d435深度相机下的三维点云重建（世界坐标系）
-本项目用于基于深度视觉相机的三维重构 本项目output目录中已经制作3个数据集可根据自己显存大小来选择合适的数据集，数据集中rgbd与深度信息均由Intel d435相机采集，环绕apriltag与物体半周模拟多视角机位，用于vggsfm点云重构
-本项目旨在为制作vla模型数据集服务，旨在寻找单机位视频情况下，重构精确三维空间的方法，进而获取精准的action信息用于vla模型的后训练
-此文件夹包含从ROS bag文件进行3D重建和AprilTag对象标定的完整工具链。
+# 3D Point Cloud Reconstruction (World Coordinate System) Based on VGGSfM and AprilTag with an Intel RealSense D435 Depth Camera
 
-## 📁 文件说明
+This project is used for 3D reconstruction based on a depth vision camera. In the `output` directory of this project, three datasets have already been prepared; you can choose an appropriate dataset according to your GPU memory size. In the datasets, both RGB-D and depth information are provided.
 
-| 文件 | 描述 |
-|------|------|
-| `explain.py` | 环境检查工具 - 验证依赖和配置 |
-| `extract_rgbd_from_bag.py` | ROS bag RGB-D提取器 - 从bag文件提取RGB和深度图像 |
-| `apriltag_calibration.py` | AprilTag标定工具 - 检测标签并计算3D坐标 |
-| `object_annotator.py` | 对象标注工具 - 交互式鼠标标注工具 |
-| `run_reconstruction_pipeline.sh` | 完整自动化脚本 - 一键执行整个流程 |
-| `WORKFLOW_README.md` | 详细文档 - 完整工作流说明和参数调整指南 |
-| `QUICK_START.md` | 快速开始 - 新用户指引和常见问题 |
+This project aims to serve the creation of datasets for VLA models. It focuses on finding a method to reconstruct accurate 3D space from single-camera video, so that precise action information can be obtained for post-training of VLA models.
 
-## 🚀 快速开始
+This folder contains a complete toolchain for performing 3D reconstruction from ROS bag files and calibrating objects using AprilTags.
 
-### 1. 验证环境
+## 📁 File Descriptions
+
+| File | Description |
+|------|-------------|
+| `explain.py` | Environment check tool — verifies dependencies and configuration |
+| `extract_rgbd_from_bag.py` | ROS bag RGB-D extractor — extracts RGB and depth images from a bag file |
+| `apriltag_calibration.py` | AprilTag calibration tool — detects tags and computes 3D coordinates |
+| `object_annotator.py` | Object annotation tool — interactive mouse-based labeling tool |
+| `run_reconstruction_pipeline.sh` | Full automation script — runs the entire pipeline with one command |
+| `WORKFLOW_README.md` | Detailed documentation — full workflow explanation and parameter tuning guide |
+| `QUICK_START.md` | Quick start — onboarding guide for new users and common Q&A |
+
+## 🚀 Quick Start
+
+### 1. Verify the environment
 ```bash
 cd /root/reconstruction_toolkit
 python3 check_environment.py
 ```
 
-### 2. 自动执行完整流程
+### 2. Run the full pipeline automatically
 ```bash
 bash run_reconstruction_pipeline.sh
 ```
 
-### 3. 单独运行各工具
+### 3. Run each tool individually
 
-**提取RGB-D数据：**
+**Extract RGB-D data:**
 ```bash
 python3 extract_rgbd_from_bag.py /path/to/file.bag /output/dir
 ```
 
-**检测AprilTag：**
+**Detect AprilTags:**
 ```bash
 python3 apriltag_calibration.py /path/to/rgb/dir /path/to/metadata.json
 ```
 
-**交互式标注对象：**
+**Annotate objects interactively:**
 ```bash
 python3 object_annotator.py /path/to/sfm/sparse /path/to/metadata.json
 ```
 
-## 📋 工作流步骤
+## 📋 Workflow Steps
 
 ```
-ROS Bag文件
+ROS bag file
     ↓
-1️⃣ extract_rgbd_from_bag.py (RGB-D提取)
+1️⃣ extract_rgbd_from_bag.py (RGB-D extraction)
     ↓
-2️⃣ demo.py (VGGSfM 3D重建)
+2️⃣ demo.py (VGGSfM 3D reconstruction)
     ↓
-3️⃣ apriltag_calibration.py (标签检测+标定)
+3️⃣ apriltag_calibration.py (tag detection + calibration)
     ↓
-4️⃣ object_annotator.py (可选：手动标注)
+4️⃣ object_annotator.py (optional: manual annotation)
     ↓
-📊 最终输出报告
+📊 Final output report
 ```
 
-## ⚙️ 系统要求
+## ⚙️ System Requirements
 
 - Python 3.8+
 - PyTorch 2.0+
 - OpenCV 4.0+
-- ROS (可选，用于bag文件处理)
+- ROS (optional, for bag file processing)
 
-## 📚 更多帮助
+## 📚 More Help
 
-- **详细工作流说明**: 查看 `WORKFLOW_README.md`
-- **常见问题**: 查看 `QUICK_START.md` 的FAQ部分
-- **参数调整**: 参考 `WORKFLOW_README.md` 的参数调整章节
+- **Detailed workflow guide**: see `WORKFLOW_README.md`
+- **FAQ**: see the FAQ section in `QUICK_START.md`
+- **Parameter tuning**: refer to the “parameter tuning” chapter in `WORKFLOW_README.md`
 
-## 💾 输出文件结构
+## 💾 Output Directory Structure
 
 ```
 reconstruction_output/
 ├── [bag_name]/
-│   ├── rgb/                    # RGB图像
-│   ├── depth/                  # 深度图像
-│   └── info/metadata.json      # 相机内参
+│   ├── rgb/                    # RGB images
+│   ├── depth/                  # Depth images
+│   └── info/metadata.json      # Camera intrinsics
 ├── [bag_name]_sfm/
-│   └── sparse/                 # COLMAP重建结果
-├── apriltag_detections/        # 标签检测可视化
-├── calibration.json            # 标定结果坐标
-└── RECONSTRUCTION_REPORT.md    # 最终报告
+│   └── sparse/                 # COLMAP reconstruction results
+├── apriltag_detections/        # Tag detection visualizations
+├── calibration.json            # Calibration result coordinates
+└── RECONSTRUCTION_REPORT.md    # Final report
 ```
